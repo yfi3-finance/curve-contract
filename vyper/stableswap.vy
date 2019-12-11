@@ -64,7 +64,8 @@ def __init__(_coins: address[N_COINS], _pool_token: address,
 @constant
 def get_D() -> uint256:
     S: uint256 = 0
-    for _x in self.balances:
+    bs: uint256[N_COINS] = self.balances
+    for _x in bs:
         S += _x
     if S == 0:
         return 0
@@ -74,7 +75,7 @@ def get_D() -> uint256:
     Ann: uint256 = convert(self.A, uint256) * N_COINS
     for _i in range(255):
         D_P: uint256 = D
-        for _x in self.balances:
+        for _x in bs:
             D_P = D_P * D / (_x * N_COINS + 1)  # +1 is to prevent /0
         Dprev = D
         D = (Ann * S + D_P * N_COINS) * D / ((Ann - 1) * D + (N_COINS + 1) * D_P)
