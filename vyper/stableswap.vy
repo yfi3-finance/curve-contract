@@ -62,10 +62,9 @@ def __init__(_coins: address[N_COINS], _pool_token: address,
 
 @private
 @constant
-def get_D() -> uint256:
+def get_D(_balances: uint256[N_COINS]) -> uint256:
     S: uint256 = 0
-    bs: uint256[N_COINS] = self.balances
-    for _x in bs:
+    for _x in _balances:
         S += _x
     if S == 0:
         return 0
@@ -75,7 +74,7 @@ def get_D() -> uint256:
     Ann: uint256 = convert(self.A, uint256) * N_COINS
     for _i in range(255):
         D_P: uint256 = D
-        for _x in bs:
+        for _x in _balances:
             D_P = D_P * D / (_x * N_COINS + 1)  # +1 is to prevent /0
         Dprev = D
         D = (Ann * S + D_P * N_COINS) * D / ((Ann - 1) * D + (N_COINS + 1) * D_P)
@@ -99,7 +98,7 @@ def add_liquidity(amounts: uint256[N_COINS], deadline: timestamp):
     # Initial invariant
     D0: uint256 = 0
     if token_supply > 0:
-        D0 = self.get_D()
+        D0 = self.get_D(self.balances)
 
     for i in range(N_COINS):
         # Check for allowances before any transfers or calculations
@@ -112,7 +111,7 @@ def add_liquidity(amounts: uint256[N_COINS], deadline: timestamp):
         self.balances[i] += amounts[i] * _precisions[i]
 
     # Invariant after change
-    D1: uint256 = self.get_D()
+    D1: uint256 = self.get_D(self.balances)
     assert D1 > D0
 
     # Calculate, how much pool tokens to mint
@@ -135,8 +134,8 @@ def add_liquidity(amounts: uint256[N_COINS], deadline: timestamp):
 
 @private
 @constant
-def get_y(i: int128, j: int128, x: uint256) -> uint256:
-    D: uint256 = self.get_D()
+def get_y(i: int128, j: int128, x: uint256, _balances: uint256[N_COINS]) -> uint256:
+    D: uint256 = self.get_D(_balances)
     c: uint256 = D
     S_: uint256 = 0
     Ann: uint256 = convert(self.A, uint256) * N_COINS
@@ -146,7 +145,7 @@ def get_y(i: int128, j: int128, x: uint256) -> uint256:
         if _i == i:
             _x = x
         elif _i != j:
-            _x = self.balances[_i]
+            _x = _balances[_i]
         else:
             continue
         S_ += _x
@@ -174,7 +173,7 @@ def get_dy(i: int128, j: int128, dx: uint256) -> uint256:
     _precisions: uint256[N_COINS] = PRECISION_MUL
 
     x: uint256 = self.balances[i] + dx * _precisions[i]
-    y: uint256 = self.get_y(i, j, x)
+    y: uint256 = self.get_y(i, j, x, self.balances)
     return (self.balances[j] - y) / _precisions[j]
 
 
@@ -186,14 +185,15 @@ def exchange(i: int128, j: int128, dx: uint256,
     assert i < N_COINS and j < N_COINS, "Coin number out of range"
 
     _precisions: uint256[N_COINS] = PRECISION_MUL
+    _balances: uint256[N_COINS] = self.balances
     _dx: uint256 = dx * _precisions[i]
 
-    x: uint256 = self.balances[i] + _dx
-    y: uint256 = self.get_y(i, j, x)
-    dy: uint256 = self.balances[j] - y
+    x: uint256 = _balances[i] + _dx
+    y: uint256 = self.get_y(i, j, x, _balances)
+    dy: uint256 = _balances[j] - y
     dy_fee: uint256 = dy * convert(self.fee, uint256) / 10 ** 10
     dy_admin_fee: uint256 = dy_fee * convert(self.admin_fee, uint256) / 10 ** 10
-    self.balances[i] += _dx
+    self.balances[i] = x
     self.balances[j] = y + (dy_fee - dy_admin_fee)
 
 
@@ -247,11 +247,11 @@ def remove_liquidity_imbalance(amounts: uint256[N_COINS], deadline: timestamp):
     fees: uint256[N_COINS] = ZEROS
     _fee: uint256 = convert(self.fee, uint256)
     _admin_fee: uint256 = convert(self.admin_fee, uint256)
-    D0: uint256 = self.get_D()
+    D0: uint256 = self.get_D(self.balances)
     for i in range(N_COINS):
         fees[i] = amounts[i] * _fee * _precisions[i] / 10 ** 10
         self.balances[i] -= amounts[i] * _precisions[i] + fees[i]  # Charge all fees
-    D1: uint256 = self.get_D()
+    D1: uint256 = self.get_D(self.balances)
 
     token_amount: uint256 = (D0 - D1) * token_supply / D0
     assert self.token.balanceOf(msg.sender) >= token_amount

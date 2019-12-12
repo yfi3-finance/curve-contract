@@ -196,7 +196,7 @@
   "constant": false,
   "payable": false,
   "type": "function",
-  "gas": 2749022
+  "gas": 2749199
  },
  {
   "name": "get_dy",
@@ -223,7 +223,7 @@
   "constant": true,
   "payable": false,
   "type": "function",
-  "gas": 2969295
+  "gas": 2967949
  },
  {
   "name": "exchange",
@@ -254,7 +254,7 @@
   "constant": false,
   "payable": false,
   "type": "function",
-  "gas": 3106883
+  "gas": 3104757
  },
  {
   "name": "remove_liquidity",
@@ -296,7 +296,7 @@
   "constant": false,
   "payable": false,
   "type": "function",
-  "gas": 2852037
+  "gas": 2852214
  },
  {
   "name": "commit_new_parameters",
