@@ -88,10 +88,10 @@ def __init__(_coins: address[N_COINS], _underlying_coins: address[N_COINS],
 def _stored_rates() -> uint256[N_COINS]:
     # exchangeRateStored * (1 + supplyRatePerBlock * (getBlockNumber - accrualBlockNumber) / 1e18)
     result: uint256[N_COINS] = PRECISION_MUL
-    use_lenging: bool[N_COINS] = USE_LENDING
+    use_lending: bool[N_COINS] = USE_LENDING
     for i in range(N_COINS):
         rate: uint256 = 10 ** 18  # Used with no lending
-        if use_lenging[i]:
+        if use_lending[i]:
             rate = cERC20(self.coins[i]).exchangeRateStored()
             supply_rate: uint256 = cERC20(self.coins[i]).supplyRatePerBlock()
             old_block: uint256 = cERC20(self.coins[i]).accrualBlockNumber()
@@ -103,10 +103,10 @@ def _stored_rates() -> uint256[N_COINS]:
 @private
 def _current_rates() -> uint256[N_COINS]:
     result: uint256[N_COINS] = PRECISION_MUL
-    use_lenging: bool[N_COINS] = USE_LENDING
+    use_lending: bool[N_COINS] = USE_LENDING
     for i in range(N_COINS):
         rate: uint256 = 10 ** 18  # Used with no lending
-        if use_lenging[i]:
+        if use_lending[i]:
             rate = cERC20(self.coins[i]).exchangeRateCurrent()
         result[i] = rate * result[i]
     return result
@@ -172,9 +172,8 @@ def get_virtual_price() -> uint256:
     return D * 10 ** 18 / token_supply
 
 
-@public
-@nonreentrant('lock')
-def add_liquidity(amounts: uint256[N_COINS]):
+@private
+def _add_liquidity(sender: address, amounts: uint256[N_COINS]) -> uint256:
     # Amounts is amounts of c-tokens
     assert not self.is_killed, "The contract was shut down"
 
@@ -214,7 +213,7 @@ def add_liquidity(amounts: uint256[N_COINS]):
             else:
                 difference = new_balances[i] - ideal_balance
             fees[i] = _fee * difference / 10 ** 10
-            self.balances[i] = new_balances[i] - fees[i] * _admin_fee / 10 ** 10
+            self.balances[i] = new_balances[i]  - fees[i] * _admin_fee / 10 ** 10
             new_balances[i] -= fees[i]
         D2 = self.get_D(self._xp_mem(rates, new_balances))
     else:
@@ -223,19 +222,65 @@ def add_liquidity(amounts: uint256[N_COINS]):
     # Calculate, how much pool tokens to mint
     mint_amount: uint256 = 0
     if token_supply == 0:
-        mint_amount = D1  # Take the dust if there was any
+       mint_amount = D1  # Take the dust if there was any
     else:
         mint_amount = token_supply * (D2 - D0) / D0
 
+    log.AddLiquidity(sender, amounts, fees, D1, token_supply + mint_amount)
+
+    return mint_amount
+
+
+@public
+@nonreentrant('lock')
+def add_liquidity(amounts: uint256[N_COINS]):
+    tethered: bool[N_COINS] = TETHERED
+    use_lending: bool[N_COINS] = USE_LENDING
+
+    mint_amount: uint256 = self._add_liquidity(msg.sender, amounts)
+    assert False, "MAKE THIS FAIL"
+
     # Take coins from the sender
     for i in range(N_COINS):
-        assert_modifiable(
-            cERC20(self.coins[i]).transferFrom(msg.sender, self, amounts[i]))
+        if (not use_lending[i]) and tethered[i]:
+            USDT(self.coins[i]).transferFrom(msg.sender, self, amounts[i])
+        else:
+            assert_modifiable(
+                cERC20(self.coins[i]).transferFrom(msg.sender, self, amounts[i]))
 
     # Mint pool tokens
     self.token.mint(msg.sender, mint_amount)
 
-    log.AddLiquidity(msg.sender, amounts, fees, D1, token_supply + mint_amount)
+
+@public
+@nonreentrant('lock')
+def add_liquidity_underlying(amounts: uint256[N_COINS]):
+    c_amounts: uint256[N_COINS] = ZEROS
+    rates: uint256[N_COINS] = self._current_rates()
+    for i in range(N_COINS):
+        c_amounts[i] = amounts[i] * 10 ** 18 / rates[i]
+
+    mint_amount: uint256 = self._add_liquidity(msg.sender, c_amounts)
+
+    tethered: bool[N_COINS] = TETHERED
+    use_lending: bool[N_COINS] = USE_LENDING
+
+    # Transfer and mint
+    for i in range(N_COINS):
+        dx: uint256 = amounts[i]
+        if tethered[i]:
+            USDT(self.underlying_coins[i]).transferFrom(msg.sender, self, dx)
+        else:
+            assert_modifiable(ERC20(self.underlying_coins[i])\
+                .transferFrom(msg.sender, self, dx))
+        if use_lending[i]:
+            ERC20(self.underlying_coins[i]).approve(self.coins[i], dx)
+            ok: uint256 = cERC20(self.coins[i]).mint(dx)
+            if ok > 0:
+                raise "Could not mint coin"
+
+    # Mint pool tokens
+    self.token.mint(msg.sender, mint_amount)
 
 
 @private
@@ -378,7 +423,7 @@ def exchange_underlying(i: int128, j: int128, dx: uint256, min_dy: uint256):
     dy_: uint256 = self._exchange(i, j, dx_, rates)
     dy: uint256 = dy_ * rate_j / 10 ** 18
     assert dy >= min_dy, "Exchange resulted in fewer coins than expected"
-    use_lenging: bool[N_COINS] = USE_LENDING
+    use_lending: bool[N_COINS] = USE_LENDING
     tethered: bool[N_COINS] = TETHERED
 
     ok: uint256 = 0
@@ -387,12 +432,12 @@ def exchange_underlying(i: int128, j: int128, dx: uint256, min_dy: uint256):
     else:
         assert_modifiable(ERC20(self.underlying_coins[i])\
             .transferFrom(msg.sender, self, dx))
-    if use_lenging[i]:
+    if use_lending[i]:
         ERC20(self.underlying_coins[i]).approve(self.coins[i], dx)
         ok = cERC20(self.coins[i]).mint(dx)
         if ok > 0:
             raise "Could not mint coin"
-    if use_lenging[j]:
+    if use_lending[j]:
         ok = cERC20(self.coins[j]).redeem(dy_)
         if ok > 0:
             raise "Could not redeem coin"
