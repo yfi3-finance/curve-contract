@@ -6,11 +6,11 @@ from os.path import realpath, dirname, join
 from .deploy import deploy_contract
 
 CONTRACT_PATH = join(dirname(dirname(realpath(__file__))), 'vyper')
-N_COINS = 4
-UP = [18, 6, 6, 18]
+N_COINS = 3
+UP = [18, 6, 6]
 UU = [10 ** p for p in UP]
-y_rates = [5 * UU[0], UU[1], 20 * UU[2], 10 * UU[3]]
-tethered = [False, False, True, False]
+y_rates = [5 * UU[0], UU[1], 20 * UU[2]]
+tethered = [False, False, True]
 PRECISIONS = [10 ** 18 // u for u in UU]
 MAX_UINT = 2 ** 256 - 1
 

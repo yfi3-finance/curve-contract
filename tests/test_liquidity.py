@@ -3,7 +3,7 @@ import random
 from eth_tester.exceptions import TransactionFailed
 from .conftest import UU, MAX_UINT
 
-N_COINS = 4
+N_COINS = 3
 
 
 def test_add_liquidity(w3, coins, yerc20s, swap):

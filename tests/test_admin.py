@@ -5,7 +5,7 @@ from time import time
 from eth_tester.exceptions import TransactionFailed
 from .conftest import UU, approx
 
-N_COINS = 4
+N_COINS = 3
 
 
 def test_transfer_ownership(tester, w3, swap):

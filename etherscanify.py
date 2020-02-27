@@ -2,8 +2,8 @@
 
 from vyper.signatures.interface import extract_external_interface
 
-N_COINS = 4
-PRECISIONS = [10 ** 18, 10 ** 6, 10 ** 6, 10 ** 18]
+N_COINS = 3
+PRECISIONS = [10 ** 18, 10 ** 6, 10 ** 6]
 contract_file = 'vyper/stableswap.vy'
 interfaces = ['ERC20m', 'yERC20']
 TETHERED = [False, False, True, False]

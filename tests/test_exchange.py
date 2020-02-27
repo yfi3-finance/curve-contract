@@ -5,7 +5,7 @@ from eth_tester.exceptions import TransactionFailed
 from .simulation import Curve
 from .conftest import UU, PRECISIONS
 
-N_COINS = 4
+N_COINS = 3
 
 
 def test_few_trades(w3, coins, yerc20s, swap, pool_token):

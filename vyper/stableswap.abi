@@ -72,12 +72,12 @@
     "indexed": true
    },
    {
-    "type": "uint256[4]",
+    "type": "uint256[3]",
     "name": "token_amounts",
     "indexed": false
    },
    {
-    "type": "uint256[4]",
+    "type": "uint256[3]",
     "name": "fees",
     "indexed": false
    },
@@ -104,12 +104,12 @@
     "indexed": true
    },
    {
-    "type": "uint256[4]",
+    "type": "uint256[3]",
     "name": "token_amounts",
     "indexed": false
    },
    {
-    "type": "uint256[4]",
+    "type": "uint256[3]",
     "name": "fees",
     "indexed": false
    },
@@ -131,12 +131,12 @@
     "indexed": true
    },
    {
-    "type": "uint256[4]",
+    "type": "uint256[3]",
     "name": "token_amounts",
     "indexed": false
    },
    {
-    "type": "uint256[4]",
+    "type": "uint256[3]",
     "name": "fees",
     "indexed": false
    },
@@ -238,11 +238,11 @@
   "outputs": [],
   "inputs": [
    {
-    "type": "address[4]",
+    "type": "address[3]",
     "name": "_coins"
    },
    {
-    "type": "address[4]",
+    "type": "address[3]",
     "name": "_underlying_coins"
    },
    {
@@ -267,26 +267,26 @@
   "outputs": [
    {
     "type": "uint256",
-    "name": "out"
+    "name": ""
    }
   ],
   "inputs": [],
   "constant": true,
   "payable": false,
   "type": "function",
-  "gas": 1535185
+  "gas": 1300796
  },
  {
   "name": "calc_token_amount",
   "outputs": [
    {
     "type": "uint256",
-    "name": "out"
+    "name": ""
    }
   ],
   "inputs": [
    {
-    "type": "uint256[4]",
+    "type": "uint256[3]",
     "name": "amounts"
    },
    {
@@ -297,14 +297,14 @@
   "constant": true,
   "payable": false,
   "type": "function",
-  "gas": 6067881
+  "gas": 5144946
  },
  {
   "name": "add_liquidity",
   "outputs": [],
   "inputs": [
    {
-    "type": "uint256[4]",
+    "type": "uint256[3]",
     "name": "amounts"
    },
    {
@@ -315,14 +315,14 @@
   "constant": false,
   "payable": false,
   "type": "function",
-  "gas": 9327083
+  "gas": 7902219
  },
  {
   "name": "get_dy",
   "outputs": [
    {
     "type": "uint256",
-    "name": "out"
+    "name": ""
    }
   ],
   "inputs": [
@@ -342,14 +342,14 @@
   "constant": true,
   "payable": false,
   "type": "function",
-  "gas": 3454227
+  "gas": 2990036
  },
  {
   "name": "get_dx",
   "outputs": [
    {
     "type": "uint256",
-    "name": "out"
+    "name": ""
    }
   ],
   "inputs": [
@@ -369,14 +369,14 @@
   "constant": true,
   "payable": false,
   "type": "function",
-  "gas": 3454232
+  "gas": 2990042
  },
  {
   "name": "get_dy_underlying",
   "outputs": [
    {
     "type": "uint256",
-    "name": "out"
+    "name": ""
    }
   ],
   "inputs": [
@@ -396,14 +396,14 @@
   "constant": true,
   "payable": false,
   "type": "function",
-  "gas": 3454087
+  "gas": 2989879
  },
  {
   "name": "get_dx_underlying",
   "outputs": [
    {
     "type": "uint256",
-    "name": "out"
+    "name": ""
    }
   ],
   "inputs": [
@@ -423,7 +423,7 @@
   "constant": true,
   "payable": false,
   "type": "function",
-  "gas": 3454093
+  "gas": 2989885
  },
  {
   "name": "exchange",
@@ -449,7 +449,7 @@
   "constant": false,
   "payable": false,
   "type": "function",
-  "gas": 7030208
+  "gas": 6106142
  },
  {
   "name": "exchange_underlying",
@@ -475,7 +475,7 @@
   "constant": false,
   "payable": false,
   "type": "function",
-  "gas": 7050194
+  "gas": 6126101
  },
  {
   "name": "remove_liquidity",
@@ -486,21 +486,21 @@
     "name": "_amount"
    },
    {
-    "type": "uint256[4]",
+    "type": "uint256[3]",
     "name": "min_amounts"
    }
   ],
   "constant": false,
   "payable": false,
   "type": "function",
-  "gas": 240409
+  "gas": 196912
  },
  {
   "name": "remove_liquidity_imbalance",
   "outputs": [],
   "inputs": [
    {
-    "type": "uint256[4]",
+    "type": "uint256[3]",
     "name": "amounts"
    },
    {
@@ -511,7 +511,7 @@
   "constant": false,
   "payable": false,
   "type": "function",
-  "gas": 9326310
+  "gas": 7901639
  },
  {
   "name": "commit_new_parameters",
@@ -592,7 +592,7 @@
   "constant": false,
   "payable": false,
   "type": "function",
-  "gas": 22667
+  "gas": 17508
  },
  {
   "name": "kill_me",
@@ -617,7 +617,7 @@
   "outputs": [
    {
     "type": "address",
-    "name": "out"
+    "name": ""
    }
   ],
   "inputs": [
@@ -636,7 +636,7 @@
   "outputs": [
    {
     "type": "address",
-    "name": "out"
+    "name": ""
    }
   ],
   "inputs": [
@@ -655,7 +655,7 @@
   "outputs": [
    {
     "type": "uint256",
-    "name": "out"
+    "name": ""
    }
   ],
   "inputs": [
@@ -674,7 +674,7 @@
   "outputs": [
    {
     "type": "uint256",
-    "name": "out"
+    "name": ""
    }
   ],
   "inputs": [],
@@ -688,7 +688,7 @@
   "outputs": [
    {
     "type": "uint256",
-    "name": "out"
+    "name": ""
    }
   ],
   "inputs": [],
@@ -702,7 +702,7 @@
   "outputs": [
    {
     "type": "uint256",
-    "name": "out"
+    "name": ""
    }
   ],
   "inputs": [],
@@ -716,7 +716,7 @@
   "outputs": [
    {
     "type": "address",
-    "name": "out"
+    "name": ""
    }
   ],
   "inputs": [],
@@ -731,7 +731,7 @@
    {
     "type": "uint256",
     "unit": "sec",
-    "name": "out"
+    "name": ""
    }
   ],
   "inputs": [],
@@ -746,7 +746,7 @@
    {
     "type": "uint256",
     "unit": "sec",
-    "name": "out"
+    "name": ""
    }
   ],
   "inputs": [],
@@ -760,7 +760,7 @@
   "outputs": [
    {
     "type": "uint256",
-    "name": "out"
+    "name": ""
    }
   ],
   "inputs": [],
@@ -774,7 +774,7 @@
   "outputs": [
    {
     "type": "uint256",
-    "name": "out"
+    "name": ""
    }
   ],
   "inputs": [],
@@ -788,7 +788,7 @@
   "outputs": [
    {
     "type": "uint256",
-    "name": "out"
+    "name": ""
    }
   ],
   "inputs": [],
@@ -802,7 +802,7 @@
   "outputs": [
    {
     "type": "address",
-    "name": "out"
+    "name": ""
    }
   ],
   "inputs": [],
