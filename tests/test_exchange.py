@@ -100,7 +100,7 @@ def test_simulated_exchange(w3, coins, yerc20s, swap):
     swap.functions.add_liquidity(liquidity, 0).transact(from_sam)
 
     # Model
-    balances = [int(swap.caller.balances(i)) for i in range(4)]
+    balances = [int(swap.caller.balances(i)) for i in range(N_COINS)]
     rates = [int(c.caller.getPricePerFullShare()) * p
              for c, p in zip(yerc20s, PRECISIONS)]
     curve = Curve(2 * 360, balances, N_COINS, rates)
