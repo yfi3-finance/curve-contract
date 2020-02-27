@@ -26,7 +26,7 @@ PRECISION_MUL: constant(uint256[N_COINS]) = ___PRECISION_MUL___
 #     PRECISION / convert(10 ** 6, uint256),   # USDT
 #     PRECISION / convert(10 ** 18, uint256)]  # TUSD
 
-admin_actions_delay: constant(uint256) = 3 * 86400
+admin_actions_delay: constant(uint256) = 1 * 86400
 
 # Events
 TokenExchange: event({buyer: indexed(address), sold_id: int128, tokens_sold: uint256, bought_id: int128, tokens_bought: uint256})
@@ -402,7 +402,6 @@ def exchange_underlying(i: int128, j: int128, dx: uint256, min_dy: uint256):
     assert dy >= min_dy, "Exchange resulted in fewer coins than expected"
     tethered: bool[N_COINS] = TETHERED
 
-    ok: uint256 = 0
     if tethered[i]:
         USDT(self.underlying_coins[i]).transferFrom(msg.sender, self, dx)
     else:
