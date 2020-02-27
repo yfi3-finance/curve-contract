@@ -6,7 +6,7 @@ N_COINS = 3
 PRECISIONS = [10 ** 18, 10 ** 6, 10 ** 6]
 contract_file = 'vyper/stableswap.vy'
 interfaces = ['ERC20m', 'yERC20']
-TETHERED = [False, False, True, False]
+TETHERED = [False, False, True]
 replacements = {
                 '___N_COINS___': str(N_COINS),
                 '___N_ZEROS___': '[' + ', '.join(['ZERO256'] * N_COINS) + ']',
